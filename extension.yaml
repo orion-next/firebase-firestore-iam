@@ -1,7 +1,7 @@
 name: firebase-firestore-iam
 version: 0.1.0
 specVersion: v1beta
-license: Apache 2.0
+license: MIT
 author:
   authorName: Vidush H. Namah
   url: https://github.com/orion-next/firebase-firestore-iam
