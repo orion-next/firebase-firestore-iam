@@ -45,3 +45,7 @@ export const AuthenticationService = {
         Logger.info(`Deleted Firebase user for ${email} and revoked tokens.`);
     }
 }
+
+export const ExceptionService = {
+    
+}
