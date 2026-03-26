@@ -1,6 +1,6 @@
-## Firestore ↔ Authentication IAM Synchronization Extension
+### Firestore ↔ Authentication IAM Extension
 
-![Build Functions](https://github.com/orion-next/firebase-firestore-iam/actions/workflows/build-on-master.yml/badge.svg?branch=master)
+![Build Status](https://github.com/orion-next/firebase-firestore-iam/actions/workflows/build-on-master.yml/badge.svg?branch=master)
 
 **Author**: Vidush H. Namah   
 **Source**: https://github.com/orion-next/firebase-firestore-iam
@@ -26,7 +26,7 @@ Built on top of the event-based synchronization logic:
   - Record event logs to sub-collection per account document.
   - Push logs to Google Cloud Logging (accessible via Google Cloud Console).
 
-### Additional Parameters
+#### Additional Parameters
 
 The following parameters may be configured.
 | Parameter | Details |
@@ -39,7 +39,7 @@ The following parameters may be configured.
 | Cleanup Schedule | Schedule for cleanup job (e.g. every 24h) |
 | Document Lifetime (Months) | Lifetime of soft‑deleted user documents in months before purge |
 
-### Google API Usage
+#### Google API Usage
 
 | API | Reason |
 | - | - |
@@ -47,7 +47,7 @@ The following parameters may be configured.
 | firestore.googleapis.com | Read/write account documents and event logs |
 | pubsub.googleapis.com | Schedule cleanup jobs |
 
-### Billing
+#### Billing
 
 To install this extension, your project must be on the [Blaze (pay as you go)](https://firebase.google.com/pricing) plan.
 - You will be charged a small amount (typically around $0.01/month) for the Firebase resources required by this extension (even if it is not used).
