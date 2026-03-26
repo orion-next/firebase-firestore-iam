@@ -21,10 +21,9 @@ This extension synchronizes Firebase Authentication with Firestore account docum
 
 Built on top of the event-based synchronization logic:
 - Claims defined via `claims` field in account documents are synchronized to custom claims.
-- Expired documents are purged based on configurable clean up schedule and document lifetime.
 - Automated actions are logged via document entries and cloud logging.
   - Record event logs to sub-collection per account document.
-  - Push logs to Google Cloud Logging (accessible via Google Cloud Console).
+  - Record function logs.
 
 #### Additional Parameters
 
@@ -32,12 +31,9 @@ The following parameters may be configured.
 | Parameter | Details |
 | - | - |
 | Cloud Functions Location | Deployment location for the functions created |
-| Accounts Collection Name | Firestore collection used to store account documents |
-| Event Log Collection Name | Subcollection name under each account document to store event logs |
 | Soft Delete Behaviour | Whether to soft delete the account document when a user is deleted |
 | Token Management Behavior | Whether to revoke refresh tokens when a user is updated |
-| Cleanup Schedule | Schedule for cleanup job (e.g. every 24h) |
-| Document Lifetime (Months) | Lifetime of soft‑deleted user documents in months before purge |
+| Allowed claims | Comma-separated list of claims that can be set on users. |
 
 #### Google API Usage
 
@@ -45,7 +41,6 @@ The following parameters may be configured.
 | - | - |
 | firebaseauth.googleapis.com | Manage Firebase Authentication users |
 | firestore.googleapis.com | Read/write account documents and event logs |
-| pubsub.googleapis.com | Schedule cleanup jobs |
 
 #### Billing
 
@@ -54,4 +49,3 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
 - This extension uses other Firebase and Google Cloud Platform services, which may have associated charges if you exceed the service’s no‑cost tier:
   - Cloud Functions for synchronization triggers.
   - Firestore for account documents and audit logs.
-  - Pub/Sub for scheduled cleanup jobs.
