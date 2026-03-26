@@ -1,0 +1,15 @@
+name: Epic (Collection of tasks)
+description: Creates a parent container for multiple issues
+title: "Epic :: "
+labels: []
+assignees: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: |
+        This issue serves as an **Epic** — a parent container for multiple related tasks.
+        Please link child issues here using references (e.g., #123, #124).
+    validations:
+      required: false

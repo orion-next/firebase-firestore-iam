@@ -1,0 +1,23 @@
+name: Work Item (Feature or Bug)
+description: Creates an issue related to feature requests or bug fixes
+title: ""
+labels: []
+assignees: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: |
+        Provide a detailed breakdown of the feature or bug.
+        Example: Component should display testimonials in a visually appealing, carousel-style format with smooth animations. Each testimonial should include the person's name, photo (optional) and their review text. The carousel should have an automatic rotation but also allow manual navigation from the user.
+    validations:
+      required: false
+  - type: textarea
+    id: samples
+    attributes:
+      label: Examples (Optional)
+      placeholder: |
+        Insert images or screenshots from other sources to help visually communicate your idea or feature.
+    validations:
+      required: false
