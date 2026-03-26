@@ -1,6 +1,5 @@
 # Compiled JavaScript files
-lib/**/*.js
-lib/**/*.js.map
+lib/
 
 # TypeScript v1 declaration files
 typings/
@@ -10,3 +9,8 @@ node_modules/
 *.local
 
 package-lock.json
+firebase.json
+
+.firebaserc
+firebase-debug.log
+firestore-debug.log

@@ -14,17 +14,15 @@ This extension synchronizes Firebase Authentication with Firestore account docum
 
 Built on top of the event-based synchronization logic:
 - Claims defined via `claims` field in account documents are synchronized to custom claims.
-- Expired documents are purged based on configurable clean up schedule and document lifetime.
 - Automated actions are logged via document entries and cloud logging.
   - Record event logs to sub-collection per account document.
-  - Push logs to Google Cloud Logging (accessible via Google Cloud Console).
+  - Record function logs.
 
 ### Requirements
 
 - A Firebase project with **Authentication** and **Firestore** enabled.
 - Node.js 22 runtime support for Cloud Functions.
-- IAM permissions to deploy Cloud Functions and Pub/Sub schedules.
-- Your project must be on the [Blaze (pay as you go) plan](https://firebase.google.com/pricing).
+- IAM permissions to deploy Cloud Functions.
 
 ### Billing
 
@@ -33,6 +31,5 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
 - This extension uses other Firebase and Google Cloud Platform services, which may have associated charges if you exceed the service’s no‑cost tier:
   - Cloud Functions for synchronization triggers.
   - Firestore for account documents and audit logs.
-  - Pub/Sub for scheduled cleanup jobs.
 
 Make sure you understand the billing implications before installing.

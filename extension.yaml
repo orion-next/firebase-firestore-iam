@@ -1,98 +1,80 @@
 name: firebase-firestore-iam
 version: 0.1.0
 specVersion: v1beta
-license: MIT
+license: Apache 2.0
 author:
   authorName: Vidush H. Namah
   url: https://github.com/orion-next/firebase-firestore-iam
 description: Synchronize authentication users with Firestore account documents, with event logs, soft delete, and scheduled hard purge.
 
 resources:
-  - name: syncAccountOnUserCreated
+  - name: SyncAccountOnUserCreated
     type: firebaseextensions.v1beta.function
     description: Sync Firestore account document when a Firebase user is created.
     properties:
       location: us-central1
-      runtime: nodejs18
-      entryPoint: syncAccountOnUserCreated
+      runtime: nodejs22
+      entryPoint: SyncAccountOnUserCreated
       eventTrigger:
         eventType: providers/firebase.auth/eventTypes/user.create
 
-  - name: deleteAccountOnUserDeleted
+  - name: DeleteAccountOnUserDeleted
     type: firebaseextensions.v1beta.function
     description: Soft delete Firestore account document when a Firebase user is deleted.
     properties:
       location: us-central1
-      runtime: nodejs18
-      entryPoint: deleteAccountOnUserDeleted
+      runtime: nodejs22
+      entryPoint: DeleteAccountOnUserDeleted
       eventTrigger:
         eventType: providers/firebase.auth/eventTypes/user.delete
 
-  - name: syncUserOnAccountWritten
+  - name: SyncUserOnAccountCreated
     type: firebaseextensions.v1beta.function
-    description: Sync Firebase user when Firestore account document is created or updated.
+    description: Sync Firebase user when Firestore account document is created.
     properties:
       location: us-central1
-      runtime: nodejs18
-      entryPoint: syncUserOnAccountWritten
+      runtime: nodejs22
+      entryPoint: SyncUserOnAccountCreated
       eventTrigger:
-        eventType: providers/cloud.firestore/eventTypes/document.write
-        resource: projects/${PROJECT_ID}/databases/(default)/documents/${param:collectionName}/{email}
+        eventType: providers/cloud.firestore/eventTypes/document.create
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
+  
+  - name: SyncUserOnAccountUpdated
+    type: firebaseextensions.v1beta.function
+    description: Sync Firebase user when Firestore account document is updated.
+    properties:
+      location: us-central1
+      runtime: nodejs22
+      entryPoint: SyncUserOnAccountUpdated
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.create
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
-  - name: deleteUserOnAccountDeleted
+  - name: DeleteUserOnAccountDeleted
     type: firebaseextensions.v1beta.function
     description: Soft delete Firestore account document and hard delete Firebase user when Firestore account document is deleted.
     properties:
       location: us-central1
-      runtime: nodejs18
-      entryPoint: deleteUserOnAccountDeleted
+      runtime: nodejs22
+      entryPoint: DeleteUserOnAccountDeleted
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.delete
-        resource: projects/${PROJECT_ID}/databases/(default)/documents/${param:collectionName}/{email}
-
-  - name: cleanupExpiredUserDocs
-    type: firebaseextensions.v1beta.function
-    description: Scheduled job to hard delete expired soft-deleted account documents.
-    properties:
-      location: us-central1
-      runtime: nodejs18
-      entryPoint: cleanupExpiredUserDocs
-      scheduleTrigger:
-        schedule: ${param:cleanupSchedule}
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
 params:
-  - param: collectionName
-    label: Accounts Collection Name
-    description: Firestore collection used to store account documents.
-    type: string
-    default: Accounts
-
-  - param: deleteDocumentOnUserDeleted
+  - name: DELETE_DOC_ON_USER_DELETED
     label: Soft Delete Document on User Deleted
     description: Whether to soft delete the Firestore account document when a Firebase user is deleted.
     type: boolean
     default: true
 
-  - param: revokeTokenOnUserUpdate
+  - name: REVOKE_TOKEN_ON_USER_UPDATED
     label: Revoke Token on User Update
     description: Whether to revoke refresh tokens when user properties or claims are updated.
     type: boolean
     default: true
-
-  - param: eventLogCollectionName
-    label: Event Log Sub-collection Name
-    description: Subcollection name under each account document to store event logs.
-    type: string
-    default: Events
-
-  - param: cleanupSchedule
-    label: Cleanup Schedule
-    description: Pub/Sub schedule for cleanup job (e.g. every 24h).
-    type: string
-    default: 0 0 1 * *
-
-  - param: docLifetimeMonths
-    label: Document Lifetime (Months)
-    description: Lifetime of soft-deleted user documents in months before hard deletion.
-    type: int
-    default: 12
+  
+  - name: ALLOWED_CLAIMS
+    label: "Allowed Custom Claims"
+    description: "Comma-separated list of claims that can be set on users."
+    default: "role, group"

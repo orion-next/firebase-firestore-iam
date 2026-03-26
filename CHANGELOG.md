@@ -10,21 +10,12 @@ All notable changes to this project will be documented in this file.
 ---
 
 ### 0.1.0 : Initial release
-- Synchronize Firebase Authentication users with Firestore account documents
-  - Parameterized collection name, deletion behavior, and token revocation
-  - Claims defined via `claims` field in account documents
-- Implemented soft delete of account documents with `_deletedDate`
-  - Scheduled hard purge of expired documents
-  - Parameterized cleanup schedule and document lifetime
-- Structured logging
-  - Streams event logs to sub-collection per account document
 
-#### Added
+**Added**
 - Firebase Authentication users with Firestore account documents sychronization
-  - Parameterized collection names, deletion behavior, and token revocation
   - Claims defined via `claims` field in account documents
+  - Configurable comma-separated list of allowed claim keys
 - Soft delete of account documents by setting `_deletedDate` in document
-  - Scheduled purge of expired documents
-  - Parameterized cleanup schedule and document lifetime
 - Structured logging
   - Recording event logs to sub-collection per account document
+  - Supports function logging
