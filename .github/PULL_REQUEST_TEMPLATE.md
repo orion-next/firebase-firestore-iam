@@ -11,11 +11,9 @@ _Clear and concise description of what this PR does._
 - [ ] Verify `PREINSTALL.md` covers requirement changes as required.
 - [ ] Verify `POSTINSTALL.md` covers usage, monitoring, and next steps as required.
 
-### Code Quality
-- [ ] Ensure all parameters are defined in `extension.yaml` and referenced in code (no hardcoded values).
-- [ ] Verify structured logging (`functions.logger`) is used consistently.
-
-### Testing
+### Quality
+- [ ] Ensure all parameters are defined in `extension.yaml` and referenced in code.
 - [ ] Run Firebase Emulator Suite locally to test triggers.
-- [ ] Confirm idempotent behavior (safe retries, no duplicate writes).
-- [ ] Check event logs are written correctly to subcollections.
+  - [ ] Confirm idempotent behavior (safe retries, no duplicate writes).
+  - [ ] Verify functions logger is used consistently.
+  - [ ] Check event logs are written correctly to subcollections.
