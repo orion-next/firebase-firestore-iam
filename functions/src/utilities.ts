@@ -1,22 +1,33 @@
-import { FieldValue, Firestore } from "firebase-admin/firestore";
-import { Collections, EventLogType } from "./types";
+import * as functions from "firebase-functions";
+import { FieldValue, Firestore, Transaction } from "firebase-admin/firestore";
+import { Collections, EventLogType, Actors, FIREBASE_ERROR_MAP } from "./types";
+import { FirebaseError } from "firebase-admin";
 
-const SYSTEM_ACTOR = "system";
+export const LogEvent = async (db: Firestore, email: string, event: Omit<EventLogType, "timestamp" | "actor">, tx?: Transaction) => {
+    const logRef = db
+        .collection(Collections.Accounts).doc(email)
+        .collection(Collections.EventLogs).doc();
 
-export const LogEvent = async (db: Firestore, email: string, action: string, source: string, details?: Record<string, any>) => {
-  const logRef = db
-    .collection(Collections.Accounts)
-    .doc(email)
-    .collection(Collections.EventLogs)
-    .doc();
+    var eventLog: EventLogType = {
+        timestamp: FieldValue.serverTimestamp(),
+        actor: Actors.SYSTEM,    
+        ...event
+    };
 
-  var log : EventLogType = {
-    timestamp: FieldValue.serverTimestamp(),
-    actor: SYSTEM_ACTOR,
-    action,
-    source
-  };
-
-  if (details) log.details = details;
-  await logRef.set(log);
+    tx ? tx.set(logRef, eventLog) : await logRef.set(eventLog);
 }
+
+export const HandleError = (error: unknown, source: string) => {
+  if (GuardForFirebaseError(error)) {
+    const mapped_error = FIREBASE_ERROR_MAP[error.code];
+    if (mapped_error) {
+      const logFn = mapped_error.Severity === "warn" ? functions.logger.warn : functions.logger.error;
+      logFn(`[${source}] ${mapped_error.Message}`);
+      return;
+    }
+  }
+
+  functions.logger.error(`[${source}] Unexpected error.`, error);
+};
+
+const GuardForFirebaseError = (err: unknown) : err is FirebaseError => typeof err === "object" && err !== null && "code" in err;
