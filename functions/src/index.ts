@@ -30,7 +30,7 @@ export const SyncAccountOnUserCreated = functions.auth.user().onCreate(async (us
                 tx.set(account_reference, {});
                 functions.logger.info(`Created empty account document for ${user_email}.`);
                 await LogEvent(db, user_email, {
-                    action: EventAction.DOCUMENT_CREATED, 
+                    action: EventAction.DOCUMENT_CREATED,
                     source: EventSource.AUTH_CHANGE_TRIGGER
                 }, tx);
             });

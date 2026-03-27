@@ -1,5 +1,6 @@
 name: firebase-firestore-iam
-version: 0.2.0
+displayName: Firebase Firestore IAM
+version: 0.2.1
 specVersion: v1beta
 license: apache-2.0
 author:
@@ -47,7 +48,7 @@ resources:
       runtime: nodejs22
       entryPoint: SyncUserOnAccountUpdated
       eventTrigger:
-        eventType: providers/cloud.firestore/eventTypes/document.create
+        eventType: providers/cloud.firestore/eventTypes/document.update
         resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
   - name: DeleteUserOnAccountDeleted
