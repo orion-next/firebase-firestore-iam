@@ -70,7 +70,7 @@ params:
       - us-central1
       - europe-west1
       - asia-northeast1
-    default: ${param:REGION}
+    default: us-central1
 
   - param: DELETE_DOC_ON_USER_DELETED
     label: Soft Delete Document on User Deleted
