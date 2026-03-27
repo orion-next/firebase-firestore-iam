@@ -67,9 +67,9 @@ params:
     description: The region where Cloud Functions will be deployed.
     type: select
     options:
-      - us-central1
-      - europe-west1
-      - asia-northeast1
+      - value: us-central1
+      - value: europe-west1
+      - value: asia-northeast1
     default: us-central1
 
   - param: DELETE_DOC_ON_USER_DELETED
