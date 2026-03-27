@@ -57,13 +57,13 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
 Authentication Changes
 | Action | Expected Trigger | Expected Outcome |
 | - | - | - |
-| Create user with email | `SyncAccountOnUserCreated` | Firestore document created/updated |
-| Create user without email | `SyncAccountOnUserCreated` | Trigger exits silently |
-| Delete user | `DeleteAccountOnUserDeleted` | Firestore document soft deleted + Auth user deleted  |
+| Create with email | `SyncAccountOnUserCreated` | Document created/updated + Logs |
+| Create w/o email | `SyncAccountOnUserCreated` | Trigger exits silently + Logs |
+| Delete user | `DeleteAccountOnUserDeleted` | Document soft deleted + User deleted + Logs  |
 
 Firetore Document Changes
 | Action | Expected Trigger | Expected Outcome |
 | - | - | - |
-| Add document | `SyncUserOnAccountCreated` | Firebase user updated (or not found) |
-| Update document | `SyncUserOnAccountUpdated` | Firebase user updated (or not found) |
-| Delete document | `DeleteUserOnAccountDeleted` | Firebase user deleted + Document soft-deleted |
+| Add | `SyncUserOnAccountCreated` | Firebase user updated (or not found) + Logs |
+| Update | `SyncUserOnAccountUpdated` | Firebase user updated (or not found) + Logs |
+| Delete | `DeleteUserOnAccountDeleted` | Firebase user deleted + Document soft-deleted + Logs |
