@@ -51,4 +51,13 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
   - Cloud Functions for synchronization triggers.
   - Firestore for account documents and audit logs.
 
+#### Post Installation
+Ensure that the service account bound to the extension has the right to manage documents and authentication.   
+Example: `Firebase Admin` role.
+- The associated service account can be found in Google Cloud Console > IAM > Service Accounts
+- It can be one of the following accounts (in cascading order):
+  - `ext-firebase-firestore-iam@<project-id>.iam.gserviceaccount.com`
+  - `<project-number>-compute@developer.gserviceaccount.com`
+  - `<project-id>@appsport.gserviceaccount.com` 
+
 ---
