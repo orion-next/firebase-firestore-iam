@@ -7,8 +7,9 @@ import { AccountDocumentType, Collections, ENV } from "./types";
 export const AccountService = {
     SoftDeleteDocument: async (tx: Transaction, db: Firestore, email: string) => {
         const doc = db.collection(Collections.Accounts).doc(email);
-        if (!(await doc.get()).exists) return;
-        tx.set(doc, { _deletedDate: FieldValue.serverTimestamp() }, { merge: true });
+        const doc_data = await doc.get();
+        if (!doc_data.exists) return;
+        tx.set(doc, { ...doc_data.data(), _deletedDate: FieldValue.serverTimestamp() });
         functions.logger.info(`Soft deleted account document for ${email}`);
     }
 }

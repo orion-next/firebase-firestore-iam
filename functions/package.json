@@ -1,7 +1,7 @@
 {
   "name": "firebase-firestore-iam",
   "description": "Firebase Extension to sync authentication users with Firestore account documents, with event logs, soft delete, and scheduled hard purge.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsc",

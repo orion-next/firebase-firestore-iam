@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file.
 | `Fixed` | Bug fixes on existing functionality |
 ---
 
+### 0.2.1 : Fix trigger registrations
+
+**Fixed**
+- Conflicting triggers between document create and update
+- Removed use of `merge: true` to prevent silent updates (without function trigger)
+
 ### 0.2.0 : Error handling and transactions
 
 **Added**

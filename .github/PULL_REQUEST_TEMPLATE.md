@@ -3,7 +3,7 @@ _Clear and concise description of what this PR does._
 ---
 
 #### Versioning
-- [ ] Update version number in `extension.yaml` (semantic versioning: MAJOR.MINOR.PATCH).
+- [ ] Update version number in `extension.yaml`.
 - [ ] Add new entry in `CHANGELOG.md` with date and categorized changes.
 
 #### Documentation
