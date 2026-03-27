@@ -58,7 +58,7 @@ Authentication Changes
 | Action | Expected Trigger | Expected Outcome |
 | - | - | - |
 | Create with email | `SyncAccountOnUserCreated` | Document created/updated + Logs |
-| Create w/o email | `SyncAccountOnUserCreated` | Trigger exits silently + Logs |
+| Create w/o email | `SyncAccountOnUserCreated` | Trigger exits silently |
 | Delete user | `DeleteAccountOnUserDeleted` | Document soft deleted + User deleted + Logs  |
 
 Firetore Document Changes
