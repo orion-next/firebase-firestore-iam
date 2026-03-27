@@ -49,3 +49,21 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
 - This extension uses other Firebase and Google Cloud Platform services, which may have associated charges if you exceed the service’s no‑cost tier:
   - Cloud Functions for synchronization triggers.
   - Firestore for account documents and audit logs.
+
+---
+
+#### Test Matrix
+
+Authentication Changes
+| Action | Expected Trigger | Expected Outcome |
+| - | - | - |
+| Create user with email | `SyncAccountOnUserCreated` | Firestore document created/updated |
+| Create user without email | `SyncAccountOnUserCreated` | Trigger exits silently |
+| Delete user | `DeleteAccountOnUserDeleted` | Firestore document soft deleted + Auth user deleted  |
+
+Firetore Document Changes
+| Action | Expected Trigger | Expected Outcome |
+| - | - | - |
+| Add document | `SyncUserOnAccountCreated` | Firebase user updated (or not found) |
+| Update document | `SyncUserOnAccountUpdated` | Firebase user updated (or not found) |
+| Delete document | `DeleteUserOnAccountDeleted` | Firebase user deleted + Document soft-deleted |
