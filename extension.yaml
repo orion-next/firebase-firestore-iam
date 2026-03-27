@@ -12,7 +12,7 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Sync Firestore account document when a Firebase user is created.
     properties:
-      location: us-central1
+      location: ${param:REGION}
       runtime: nodejs22
       entryPoint: SyncAccountOnUserCreated
       eventTrigger:
@@ -22,7 +22,7 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Soft delete Firestore account document when a Firebase user is deleted.
     properties:
-      location: us-central1
+      location: ${param:REGION}
       runtime: nodejs22
       entryPoint: DeleteAccountOnUserDeleted
       eventTrigger:
@@ -32,7 +32,7 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Sync Firebase user when Firestore account document is created.
     properties:
-      location: us-central1
+      location: ${param:REGION}
       runtime: nodejs22
       entryPoint: SyncUserOnAccountCreated
       eventTrigger:
@@ -43,7 +43,7 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Sync Firebase user when Firestore account document is updated.
     properties:
-      location: us-central1
+      location: ${param:REGION}
       runtime: nodejs22
       entryPoint: SyncUserOnAccountUpdated
       eventTrigger:
@@ -54,7 +54,7 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Soft delete Firestore account document and hard delete Firebase user when Firestore account document is deleted.
     properties:
-      location: us-central1
+      location: ${param:REGION}
       runtime: nodejs22
       entryPoint: DeleteUserOnAccountDeleted
       eventTrigger:
@@ -62,6 +62,16 @@ resources:
         resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
 params:
+  - param: REGION
+    label: Cloud Functions Region
+    description: The region where Cloud Functions will be deployed.
+    type: select
+    options:
+      - us-central1
+      - europe-west1
+      - asia-northeast1
+    default: ${param:REGION}
+
   - param: DELETE_DOC_ON_USER_DELETED
     label: Soft Delete Document on User Deleted
     description: Whether to soft delete the Firestore account document when a Firebase user is deleted.
