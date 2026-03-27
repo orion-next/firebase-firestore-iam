@@ -9,6 +9,14 @@ All notable changes to this project will be documented in this file.
 | `Fixed` | Bug fixes on existing functionality |
 ---
 
+### 0.2.0 : Error handling and transactions
+
+**Added**
+- Firebase error handling across the project
+  - Messages for most common auth and firestore errors defined for user-readability
+  - Non firebase errors are logged as-is.
+- Transactions for mutiple writes to documents
+
 ### 0.1.0 : Initial release
 
 **Added**
