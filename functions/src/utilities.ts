@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import { FieldValue, Firestore, Transaction } from "firebase-admin/firestore";
-import { Collections, ErrorCodes, EventLogType, Actors } from "./types";
+import { Collections, EventLogType, Actors, FIREBASE_ERROR_MAP } from "./types";
 import { FirebaseError } from "firebase-admin";
 
 export const LogEvent = async (db: Firestore, email: string, event: Omit<EventLogType, "timestamp" | "actor">, tx?: Transaction) => {
@@ -18,30 +18,16 @@ export const LogEvent = async (db: Firestore, email: string, event: Omit<EventLo
 }
 
 export const HandleError = (error: unknown, source: string) => {
-    if (GuardForFirebaseError(error)) {
-        switch (error.code) {
-            case ErrorCodes.AUTH_USER_NOT_FOUND:
-                functions.logger.warn(
-                    `[${source}] User not found.`
-                );
-                break;
-
-            case ErrorCodes.AUTH_INVALID_EMAIL:
-                functions.logger.error(
-                    `[${source}] Invalid email.`
-                );
-                break;
-
-            default:
-                functions.logger.error(
-                    `[${source}] Unexpected error ${error.message}.`,
-                    error
-                );
-                break;
-        }
+  if (GuardForFirebaseError(error)) {
+    const mapped_error = FIREBASE_ERROR_MAP[error.code];
+    if (mapped_error) {
+      const logFn = mapped_error.Severity === "warn" ? functions.logger.warn : functions.logger.error;
+      logFn(`[${source}] ${mapped_error.Message}`);
+      return;
     }
+  }
 
-    functions.logger.error(`[${source}] Unexpected error.`, error);
-}
+  functions.logger.error(`[${source}] Unexpected error.`, error);
+};
 
 const GuardForFirebaseError = (err: unknown) : err is FirebaseError => typeof err === "object" && err !== null && "code" in err;

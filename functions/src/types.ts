@@ -58,7 +58,43 @@ export const ENV = {
     }),
 };
 
-export enum ErrorCodes {
-  AUTH_USER_NOT_FOUND = "auth/user-not-found",
-  AUTH_INVALID_EMAIL = "auth/invalid-email",
-}
+export const FIREBASE_ERROR_MAP: Record<string, { Severity: "warn" | "error"; Message: string; }> = {
+    // Authentication
+    "auth/user-not-found": { Severity: "warn", Message: "User not found." },
+    "auth/invalid-email": { Severity: "error", Message: "Invalid email format." },
+    "auth/email-already-exists": { Severity: "error", Message: "Email already exists." },
+    "auth/uid-already-exists": { Severity: "error", Message: "UID already exists." },
+    "auth/invalid-uid": { Severity: "error", Message: "Invalid UID." },
+    "auth/invalid-display-name": { Severity: "error", Message: "Invalid display name." },
+    "auth/invalid-photo-url": { Severity: "error", Message: "Invalid photo URL." },
+    "auth/invalid-phone-number": { Severity: "error", Message: "Invalid phone number." },
+    "auth/phone-number-already-exists": { Severity: "error", Message: "Phone number already exists." },
+    "auth/invalid-disabled-field": { Severity: "error", Message: "Invalid disabled field." },
+    "auth/claims-too-large": { Severity: "error", Message: "Custom claims payload too large." },
+    "auth/id-token-expired": { Severity: "error", Message: "ID token expired." },
+    "auth/id-token-revoked": { Severity: "error", Message: "ID token revoked." },
+    "auth/invalid-id-token": { Severity: "error", Message: "Invalid ID token." },
+    "auth/argument-error": { Severity: "error", Message: "Invalid argument provided." },
+    "auth/insufficient-permission": { Severity: "error", Message: "Insufficient permission." },
+    "auth/internal-error": { Severity: "error", Message: "Internal Auth error." },
+
+    // Firestore
+    "aborted": { Severity: "error", Message: "Operation aborted." },
+    "already-exists": { Severity: "error", Message: "Resource already exists." },
+    "cancelled": { Severity: "error", Message: "Operation cancelled." },
+    "data-loss": { Severity: "error", Message: "Unrecoverable data loss or corruption." },
+    "deadline-exceeded": { Severity: "error", Message: "Deadline exceeded." },
+    "failed-precondition": { Severity: "error", Message: "Operation failed precondition." },
+    "internal": { Severity: "error", Message: "Internal Firestore error." },
+    "invalid-argument": { Severity: "error", Message: "Invalid argument." },
+    "not-found": { Severity: "error", Message: "Document not found." },
+    "out-of-range": { Severity: "error", Message: "Value out of range." },
+    "permission-denied": { Severity: "error", Message: "Permission denied." },
+    "resource-exhausted": { Severity: "error", Message: "Resource exhausted (quota exceeded)." },
+    "unauthenticated": { Severity: "error", Message: "Unauthenticated request." },
+    "unavailable": { Severity: "error", Message: "Service unavailable." },
+    "unimplemented": { Severity: "error", Message: "Operation not implemented."
+    }
+};
+
+
