@@ -62,19 +62,19 @@ resources:
         resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
 params:
-  - name: DELETE_DOC_ON_USER_DELETED
+  - param: DELETE_DOC_ON_USER_DELETED
     label: Soft Delete Document on User Deleted
     description: Whether to soft delete the Firestore account document when a Firebase user is deleted.
     type: boolean
     default: true
 
-  - name: REVOKE_TOKEN_ON_USER_UPDATED
+  - param: REVOKE_TOKEN_ON_USER_UPDATED
     label: Revoke Token on User Update
     description: Whether to revoke refresh tokens when user properties or claims are updated.
     type: boolean
     default: true
   
-  - name: ALLOWED_CLAIMS
+  - param: ALLOWED_CLAIMS
     label: "Allowed Custom Claims"
     description: "Comma-separated list of claims that can be set on users."
     default: "role, group"
