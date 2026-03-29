@@ -14,6 +14,8 @@ export const SyncAccountOnUserCreated = functions.auth.user().onCreate(async (us
     if (!user.uid) return;
     const user_uid = user.uid;
 
+    functions.logger.log(`[SyncAccountOnUserCreated] Started execution for UID ${user_uid}`);
+
     try {
         const account_reference = db.collection(Collections.Accounts).doc(user_uid);
         const account_document = await account_reference.get();
@@ -45,15 +47,17 @@ export const SyncAccountOnUserCreated = functions.auth.user().onCreate(async (us
             source: EventSource.AUTH_CHANGE_TRIGGER
         });
     } catch (err) {
-        HandleError(err, SyncAccountOnUserCreated.name);
+        HandleError(err, "SyncAccountOnUserCreated");
     }
 });
 
 export const DeleteAccountOnUserDeleted = functions.auth.user().onDelete(async (user) => {
     if (!ENV.DELETE_DOC_ON_USER_DELETED.value()) return;
-
+    
     if (!user.uid) return;
     var user_uid = user.uid;
+    functions.logger.log(`[DeleteAccountOnUserDeleted] Started execution for UID ${user_uid}`);
+
     try {
         await db.runTransaction(async (tx) => {
             await AccountService.SoftDeleteDocument(tx, db, user_uid);
@@ -63,12 +67,14 @@ export const DeleteAccountOnUserDeleted = functions.auth.user().onDelete(async (
             }, tx);
         });
     } catch (err) {
-        HandleError(err, DeleteAccountOnUserDeleted.name);
+        HandleError(err, "DeleteAccountOnUserDeleted");
     }
 });
 
 export const SyncUserOnAccountCreated = functions.firestore.document(`${Collections.Accounts}/{uid}`).onCreate(async (change, context) => {
     const user_uid = context.params.uid;
+    functions.logger.log(`[SyncUserOnAccountCreated] Started execution for UID ${user_uid}`);
+
     const account_data = change.data() as AccountDocumentType;
     if (account_data._deletedDate)
     {        
@@ -83,12 +89,14 @@ export const SyncUserOnAccountCreated = functions.firestore.document(`${Collecti
             source: EventSource.DOC_CHANGE_TRIGGER
         });
     } catch (err) {
-        HandleError(err, SyncUserOnAccountCreated.name);
+        HandleError(err, "SyncUserOnAccountCreated");
     }
 });
 
 export const SyncUserOnAccountUpdated = functions.firestore.document(`${Collections.Accounts}/{uid}`).onUpdate(async (change, context) => {
     const user_uid = context.params.uid;
+    functions.logger.log(`[SyncUserOnAccountUpdated] Started execution for UID ${user_uid}`);
+
     const before = change.before.data() as AccountDocumentType;
     const after = change.after.data() as AccountDocumentType;
 
@@ -120,7 +128,7 @@ export const SyncUserOnAccountUpdated = functions.firestore.document(`${Collecti
             source: EventSource.DOC_CHANGE_TRIGGER
         });
     } catch (err) {
-        HandleError(err, SyncUserOnAccountUpdated.name);
+        HandleError(err, "SyncUserOnAccountUpdated");
     }
 });
 
@@ -128,6 +136,7 @@ export const DeleteUserOnAccountDeleted = functions.firestore.document(`${Collec
     if (!ENV.DELETE_USER_ON_DOC_DELETED.value()) return;
 
     const user_uid = context.params.uid;
+    functions.logger.log(`[DeleteUserOnAccountDeleted] Started execution for UID ${user_uid}`);
 
     try {
         await AuthenticationService.DeleteUserAndRevokeToken(auth, user_uid);
@@ -140,6 +149,6 @@ export const DeleteUserOnAccountDeleted = functions.firestore.document(`${Collec
             }, tx);
         });
     } catch (err) {
-        HandleError(err, DeleteUserOnAccountDeleted.name);
+        HandleError(err, "DeleteUserOnAccountDeleted");
     }
 });
