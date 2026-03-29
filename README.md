@@ -49,9 +49,12 @@ sequenceDiagram
         Func->>FS: Create Empty Document (uid)
         Func->>Log: Log DOCUMENT_CREATED
     else Document exists AND _deletedDate is set
-        Func->>Auth: Revoke Tokens & Delete User
+        Func->>Auth: Revoke Tokens & Delete User Record
     else Document exists AND _deletedDate is NOT set
         Func->>Auth: Sync properties & Set Custom Claims
+        alt ENV.REVOKE_TOKEN_ON_USER_UPDATE is true
+            Func->>Auth: Revoke refresh tokens
+        end
         Func->>Log: Log USER_CREATED
     end
 ```
@@ -68,7 +71,7 @@ sequenceDiagram
 
     Auth->>Func: User Deleted Trigger
     alt ENV.DELETE_DOC_ON_USER_DELETED is true
-        Func->>FS: Soft Delete Account (set _deletedDate)
+        Func->>FS: Soft Delete (Transaction)
         Func->>Log: Log USER_DELETED
     end
 ```
@@ -84,18 +87,25 @@ sequenceDiagram
     participant Log as Firestore (Activity)
 
     FS->>Func: Document Created/Updated Trigger
-    Func->>Auth: Get User Record
-    alt User found
-        alt ENV.UPDATE_USER_ON_DOC_UPDATED is true
-            Func->>Auth: Update properties & Set Custom Claims (allowed claims only)
+    alt Document is soft-deleted (_deletedDate exists)
+        Func->>Auth: Revoke Tokens & Delete User Record
+    else Document is active
+        Func->>Auth: Get User Record
+        alt User found
+            alt ENV.UPDATE_USER_ON_DOC_UPDATED is true
+                Func->>Auth: Update properties & Set Custom Claims (allowed claims only)
+                alt ENV.REVOKE_TOKEN_ON_USER_UPDATE is true
+                    Func->>Auth: Revoke refresh tokens
+                end
+            end
+        else User NOT found AND ENV.CREATE_USER_ON_DOC_CREATED is true
+            Func->>Auth: Create User with properties & claims
             alt ENV.REVOKE_TOKEN_ON_USER_UPDATE is true
                 Func->>Auth: Revoke refresh tokens
             end
         end
-    else User NOT found AND ENV.CREATE_DOC_ON_USER_CREATED is true
-        Func->>Auth: Create User with properties & claims
+        Func->>Log: Log USER_UPDATED
     end
-    Func->>Log: Log USER_UPDATED
 ```
 
 #### 4. Firestore: Account Deleted
@@ -111,7 +121,31 @@ sequenceDiagram
     FS->>Func: Document Deleted Trigger
     alt ENV.DELETE_USER_ON_DOC_DELETED is true
         Func->>Auth: Revoke Tokens & Delete User Record
+        Func->>FS: Soft Delete (Transaction)
         Func->>Log: Log USER_DELETED
+    end
+```
+
+#### 5. Authentication: Before User Creation
+Triggers before a new user is created. If `BLOCK_PUBLIC_SIGNUP` is enabled, it ensures a document exists in the `Accounts` collection with the matching UID.
+
+```mermaid
+sequenceDiagram
+    participant Auth as Firebase Auth
+    participant Func as Cloud Function (BeforeUserCreation)
+    participant FS as Firestore (Accounts)
+
+    Auth->>Func: Before User Created Trigger (Blocking)
+    alt ENV.BLOCK_PUBLIC_SIGNUP is false
+        Func-->>Auth: Allow Creation
+    else ENV.BLOCK_PUBLIC_SIGNUP is true
+        Func->>FS: Check if Document (uid) exists
+        FS-->>Func: Exists?
+        alt Document exists
+            Func-->>Auth: Allow Creation
+        else Document does NOT exist
+            Func-->>Auth: Block Creation (403 Permission Denied)
+        end
     end
 ```
 
@@ -124,6 +158,7 @@ The following parameters may be configured.
 | Soft Delete Behaviour | Whether to soft delete the account document when a user is deleted |
 | Token Management Behavior | Whether to revoke refresh tokens when a user is updated |
 | Allowed claims | Comma-separated list of claims that can be set on users. |
+| Block Public Signup | Whether to block user creation if no Firestore document exists for the UID. |
 
 #### Google API Usage
 

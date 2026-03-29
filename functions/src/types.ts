@@ -72,6 +72,10 @@ export const ENV = {
         description: "Comma-separated list of allowed custom claims",
         default: "role, group",
     }),
+    BLOCK_PUBLIC_SIGNUP: params.defineBoolean("BLOCK_PUBLIC_SIGNUP", {
+        description: "Only allow user creation if a document exists in the Accounts collection with that user's UID",
+        default: false,
+    }),
 };
 
 // Define the enum with all error codes
@@ -150,5 +154,3 @@ export const FIREBASE_ERROR_MAP: Record<string, { Severity: "warn" | "error"; Me
   [FIREBASE_ERROR.UNAVAILABLE]: { Severity: "error", Message: "Service unavailable." },
   [FIREBASE_ERROR.UNIMPLEMENTED]: { Severity: "error", Message: "Operation not implemented." }
 };
-
-

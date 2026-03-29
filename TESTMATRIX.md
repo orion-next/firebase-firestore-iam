@@ -103,4 +103,3 @@ This checklist provides a complete verification path for all synchronization tri
 - **Verification**:
     - [ ] The associated Firebase Auth user is deleted.
     - [ ] All refresh tokens for that user are revoked.
-    - [ ] An `Activity` log exists with `action: USER_DELETED` and `source: DOC_CHANGE_TRIGGER`.

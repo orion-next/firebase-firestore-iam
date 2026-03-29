@@ -4,6 +4,7 @@ This extension synchronizes Firebase Authentication with Firestore account docum
 
 | Authentication Event | Details |
 | - | - |
+| Before User Created | (Optional) Block user creation if no Firestore document exists with matching UID |
 | User Creation | Ensures a corresponding Firestore document exists |
 | User Deletion | (Optional) Soft deletes the Firestore document by setting `_deletedDate` |
 

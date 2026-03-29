@@ -26,7 +26,7 @@ export const AuthenticationService = {
                 functions.logger.info(`Updated user properties for ${uid}`);
             }
         } catch (error: any) {
-            if (error.code === FIREBASE_ERROR.USER_NOT_FOUND && ENV.CREATE_DOC_ON_USER_CREATED.value()) {
+            if (error.code === FIREBASE_ERROR.USER_NOT_FOUND && ENV.CREATE_USER_ON_DOC_CREATED.value()) {
                 user_record = await auth.createUser({ uid, ...data_props });
                 functions.logger.info(`Created new user with UID ${uid}`);
             } else {

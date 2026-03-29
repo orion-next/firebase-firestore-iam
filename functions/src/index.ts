@@ -143,3 +143,32 @@ export const DeleteUserOnAccountDeleted = functions.firestore.document(`${Collec
         HandleError(err, DeleteUserOnAccountDeleted.name);
     }
 });
+
+/**
+ * Blocking function that only allows user creation if a corresponding 
+ * document exists in the Accounts collection and BLOCK_PUBLIC_SIGNUP is true.
+ */
+export const BeforeUserCreation = functions.auth.user().beforeCreate(async (user) => {
+    if (!ENV.BLOCK_PUBLIC_SIGNUP.value()) return;
+
+    const user_uid = user.uid;
+    if (!user_uid) return;
+
+    try {
+        const account_doc = await db.collection(Collections.Accounts).doc(user_uid).get();
+
+        if (!account_doc.exists) {
+            functions.logger.warn(`Blocking signup for UID ${user_uid}: No Firestore document in '${Collections.Accounts}' found.`);
+            throw new functions.https.HttpsError(
+                'permission-denied', 
+                `Public signup is blocked. No pre-allocated account document found for UID: ${user_uid}`
+            );
+        }
+
+        functions.logger.info(`Allowing signup for UID ${user_uid}: Account document exists.`);
+    } catch (err) {
+        if (err instanceof functions.https.HttpsError) throw err;
+        HandleError(err, "BeforeUserCreation");
+        throw new functions.https.HttpsError('internal', 'Internal error during signup validation.');
+    }
+});
