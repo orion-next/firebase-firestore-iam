@@ -175,6 +175,19 @@ To install this extension, your project must be on the [Blaze (pay as you go)](h
   - Cloud Functions for synchronization triggers.
   - Firestore for account documents and audit logs.
 
+The following table provides estimates for Cloud Function invocations and Firestore document operations per event, accounting for cascading processes (default configuration).
+
+| Operation | Function Invocations | Firestore Reads | Firestore Writes |
+| :--- | :---: | :---: | :---: |
+| **User Sign-Up** (Public) <br/>`BeforeUserCreation` + `SyncAccountOnUserCreated` | 3 | 2 | 3 |
+| **User Sign-Up** (Pre-allocated) <br/>`BeforeUserCreation` + `SyncAccountOnUserCreated` | 2 | 2 | 1 |
+| **Firestore Doc Update** <br/>`SyncUserOnAccountUpdated` | 1 | 0 | 1 |
+| **Auth User Deletion** <br/>`DeleteAccountOnUserDeleted` | 1 | 1 | 2 |
+| **Firestore Doc Deletion** <br/>`DeleteUserOnAccountDeleted` | 1 | 1 | 2 |
+
+> [!NOTE]
+> Estimates assume `BLOCK_PUBLIC_SIGNUP=true` and default synchronization settings. If `CREATE_DOC_ON_USER_CREATED` is enabled, a user sign-up will trigger a cascading Firestore creation event, adding 1 invocation and 1 write (for the log entry).
+
 #### Post Installation
 Ensure that the service account bound to the extension has the right to manage documents and authentication.   
 Example: `Firebase Admin` role.
