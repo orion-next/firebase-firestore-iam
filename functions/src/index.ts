@@ -18,14 +18,8 @@ export const SyncAccountOnUserCreated = functions.auth.user().onCreate(async (us
         const account_reference = db.collection(Collections.Accounts).doc(user_uid);
         const account_document = await account_reference.get();
 
-        if (account_document.exists) {
-            const account_data = account_document.data() as AccountDocumentType;
-            await AuthenticationService.SyncUserFromDocument(auth, user_uid, account_data);
-            await LogEvent(db, user_uid, {
-                action: EventAction.USER_CREATED,
-                source: EventSource.AUTH_CHANGE_TRIGGER
-            });
-        } else if (ENV.CREATE_DOC_ON_USER_CREATED.value()) {
+        if (!account_document.exists && ENV.CREATE_DOC_ON_USER_CREATED.value())
+        {
             await db.runTransaction(async (tx) => {
                 tx.set(account_reference, {});
                 functions.logger.info(`Created empty account document for ${user_uid}.`);
@@ -34,7 +28,22 @@ export const SyncAccountOnUserCreated = functions.auth.user().onCreate(async (us
                     source: EventSource.AUTH_CHANGE_TRIGGER
                 }, tx);
             });
+
+            return;
         }
+
+        const account_data = account_document.data() as AccountDocumentType;
+        if (account_data._deletedDate)
+        {
+            await AuthenticationService.DeleteUserAndRevokeToken(auth, user_uid);
+            return;
+        }
+        
+        await AuthenticationService.SyncUserFromDocument(auth, user_uid, account_data);
+        await LogEvent(db, user_uid, {
+            action: EventAction.USER_CREATED,
+            source: EventSource.AUTH_CHANGE_TRIGGER
+        });
     } catch (err) {
         HandleError(err, SyncAccountOnUserCreated.name);
     }
@@ -61,6 +70,11 @@ export const DeleteAccountOnUserDeleted = functions.auth.user().onDelete(async (
 export const SyncUserOnAccountCreated = functions.firestore.document(`${Collections.Accounts}/{uid}`).onCreate(async (change, context) => {
     const user_uid = context.params.uid;
     const account_data = change.data() as AccountDocumentType;
+    if (account_data._deletedDate)
+    {        
+        await AuthenticationService.DeleteUserAndRevokeToken(auth, user_uid);
+        return;
+    }
 
     try {
         await AuthenticationService.SyncUserFromDocument(auth, user_uid, account_data);
@@ -75,10 +89,32 @@ export const SyncUserOnAccountCreated = functions.firestore.document(`${Collecti
 
 export const SyncUserOnAccountUpdated = functions.firestore.document(`${Collections.Accounts}/{uid}`).onUpdate(async (change, context) => {
     const user_uid = context.params.uid;
-    const account_data = change.after.data() as AccountDocumentType;
+    const before = change.before.data() as AccountDocumentType;
+    const after = change.after.data() as AccountDocumentType;
 
     try {
-        await AuthenticationService.SyncUserFromDocument(auth, user_uid, account_data);
+        if (after._deletedDate) {        
+            await AuthenticationService.DeleteUserAndRevokeToken(auth, user_uid);
+            return;
+        }
+
+        // List of fields that sync to Firebase Authentication
+        const syncableFields: (keyof AccountDocumentType)[] = [
+            "displayName", "photoURL", "email", "emailVerified", 
+            "phoneNumber", "disabled", "claims"
+        ];
+
+        // Only sync if significant IAM properties have changed
+        const hasSignificantChange = syncableFields.some(field => 
+            JSON.stringify(before[field]) !== JSON.stringify(after[field])
+        );
+
+        if (!hasSignificantChange) {
+            functions.logger.info(`No syncable changes for ${user_uid}. Skipping sync.`);
+            return;
+        }
+
+        await AuthenticationService.SyncUserFromDocument(auth, user_uid, after);
         await LogEvent(db, user_uid, {
             action: EventAction.USER_UPDATED,
             source: EventSource.DOC_CHANGE_TRIGGER
@@ -90,7 +126,7 @@ export const SyncUserOnAccountUpdated = functions.firestore.document(`${Collecti
 
 export const DeleteUserOnAccountDeleted = functions.firestore.document(`${Collections.Accounts}/{uid}`).onDelete(async (_snap, context) => {
     if (!ENV.DELETE_USER_ON_DOC_DELETED.value()) return;
-    
+
     const user_uid = context.params.uid;
 
     try {

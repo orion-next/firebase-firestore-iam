@@ -7,6 +7,8 @@
 
 Keep Firebase Authentication users and Firestore account documents synchronized.
 
+[Test Matrix & Coverage](file:///c:/Workspace/firebase-firestore-iam/test_matrix.md)
+
 This extension synchronizes Firebase Authentication with Firestore account documents. It ensures that user properties and claims remain consistent across both systems, while providing audit trails and lifecycle management.
 
 | Event | Details |
@@ -25,6 +27,93 @@ Built on top of the event-based synchronization logic:
 - Automated actions are logged via document entries and cloud logging.
   - Record event logs to sub-collection per account document.
   - Record function logs.
+
+### Sequence Diagrams
+
+The following diagrams outline the synchronization logic for each trigger.
+
+#### 1. Authentication: User Created
+Triggers when a new user is created in Firebase Authentication.
+
+```mermaid
+sequenceDiagram
+    participant Auth as Firebase Auth
+    participant Func as Cloud Function (SyncAccountOnUserCreated)
+    participant FS as Firestore (Accounts)
+    participant Log as Firestore (Activity)
+
+    Auth->>Func: User Created Trigger
+    Func->>FS: Get Account Document (uid)
+    FS-->>Func: Document Data
+    alt Document does NOT exist AND ENV.CREATE_DOC_ON_USER_CREATED is true
+        Func->>FS: Create Empty Document (uid)
+        Func->>Log: Log DOCUMENT_CREATED
+    else Document exists AND _deletedDate is set
+        Func->>Auth: Revoke Tokens & Delete User
+    else Document exists AND _deletedDate is NOT set
+        Func->>Auth: Sync properties & Set Custom Claims
+        Func->>Log: Log USER_CREATED
+    end
+```
+
+#### 2. Authentication: User Deleted
+Triggers when a user is deleted from Firebase Authentication.
+
+```mermaid
+sequenceDiagram
+    participant Auth as Firebase Auth
+    participant Func as Cloud Function (DeleteAccountOnUserDeleted)
+    participant FS as Firestore (Accounts)
+    participant Log as Firestore (Activity)
+
+    Auth->>Func: User Deleted Trigger
+    alt ENV.DELETE_DOC_ON_USER_DELETED is true
+        Func->>FS: Soft Delete Account (set _deletedDate)
+        Func->>Log: Log USER_DELETED
+    end
+```
+
+#### 3. Firestore: Account Created / Updated
+Triggers when an account document is created or updated in the `Accounts` collection.
+
+```mermaid
+sequenceDiagram
+    participant FS as Firestore (Accounts)
+    participant Func as Cloud Function (SyncUserOnAccountCreated / Updated)
+    participant Auth as Firebase Auth
+    participant Log as Firestore (Activity)
+
+    FS->>Func: Document Created/Updated Trigger
+    Func->>Auth: Get User Record
+    alt User found
+        alt ENV.UPDATE_USER_ON_DOC_UPDATED is true
+            Func->>Auth: Update properties & Set Custom Claims (allowed claims only)
+            alt ENV.REVOKE_TOKEN_ON_USER_UPDATE is true
+                Func->>Auth: Revoke refresh tokens
+            end
+        end
+    else User NOT found AND ENV.CREATE_DOC_ON_USER_CREATED is true
+        Func->>Auth: Create User with properties & claims
+    end
+    Func->>Log: Log USER_UPDATED
+```
+
+#### 4. Firestore: Account Deleted
+Triggers when an account document is deleted from Firestore.
+
+```mermaid
+sequenceDiagram
+    participant FS as Firestore (Accounts)
+    participant Func as Cloud Function (DeleteUserOnAccountDeleted)
+    participant Auth as Firebase Auth
+    participant Log as Firestore (Activity)
+
+    FS->>Func: Document Deleted Trigger
+    alt ENV.DELETE_USER_ON_DOC_DELETED is true
+        Func->>Auth: Revoke Tokens & Delete User Record
+        Func->>Log: Log USER_DELETED
+    end
+```
 
 #### Additional Parameters
 
