@@ -1,6 +1,6 @@
 name: firebase-firestore-iam
 displayName: Firebase Firestore IAM
-version: 0.2.1
+version: 0.2.2
 specVersion: v1beta
 license: apache-2.0
 author:
@@ -38,7 +38,7 @@ resources:
       entryPoint: SyncUserOnAccountCreated
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.create
-        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{uid}
   
   - name: SyncUserOnAccountUpdated
     type: firebaseextensions.v1beta.function
@@ -49,7 +49,7 @@ resources:
       entryPoint: SyncUserOnAccountUpdated
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.update
-        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{uid}
 
   - name: DeleteUserOnAccountDeleted
     type: firebaseextensions.v1beta.function
@@ -60,7 +60,7 @@ resources:
       entryPoint: DeleteUserOnAccountDeleted
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.delete
-        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{uid}
 
 params:
   - param: REGION
@@ -73,9 +73,33 @@ params:
       - value: asia-northeast1
     default: us-central1
 
+  - param: CREATE_DOC_ON_USER_CREATED
+    label: Create Document on User Created
+    description: Whether to create a blank Firestore account document when a Firebase user is created.
+    type: boolean
+    default: true
+
   - param: DELETE_DOC_ON_USER_DELETED
     label: Soft Delete Document on User Deleted
     description: Whether to soft delete the Firestore account document when a Firebase user is deleted.
+    type: boolean
+    default: true
+
+  - param: CREATE_USER_ON_DOC_CREATED
+    label: Create User on Document Created
+    description: Whether to create a Firebase user without providers when an account document is created.
+    type: boolean
+    default: true
+
+  - param: UPDATE_USER_ON_DOC_UPDATED
+    label: Update User on Document Updated
+    description: Whether to update a Firebase user when an account document is updated.
+    type: boolean
+    default: true
+
+  - param: DELETE_USER_ON_DOC_DELETED
+    label: Delete User on Document deleted
+    description: Whether to delete a Firebase user when an account document is deleted.
     type: boolean
     default: true
 
@@ -88,4 +112,4 @@ params:
   - param: ALLOWED_CLAIMS
     label: "Allowed Custom Claims"
     description: "Comma-separated list of claims that can be set on users."
-    default: "role, group"
+    default: "role"

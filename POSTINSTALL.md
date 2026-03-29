@@ -12,7 +12,7 @@ Example: `Firebase Admin` role.
   - `<project-id>@appsport.gserviceaccount.com` 
 
 ### Accounts Collection
-A Firestore collection `Accounts` stores user account documents keyed by email.
+A Firestore collection `Accounts` stores user account documents keyed by **UID**.
 
 ### Event Logs
 All actions are recorded in a subcollection `Activity` under each user account document.

@@ -44,8 +44,24 @@ export enum Collections {
 }
 
 export const ENV = {
+    CREATE_DOC_ON_USER_CREATED: params.defineBoolean("CREATE_DOC_ON_USER_CREATED", {
+        description: "Create account document when user is created",
+        default: true,
+    }),
     DELETE_DOC_ON_USER_DELETED: params.defineBoolean("DELETE_DOC_ON_USER_DELETED", {
         description: "Soft delete account document when user is deleted",
+        default: true,
+    }),
+    CREATE_USER_ON_DOC_CREATED: params.defineBoolean("CREATE_USER_ON_DOC_CREATED", {
+        description: "Create user when account document is created",
+        default: true,
+    }),
+    UPDATE_USER_ON_DOC_UPDATED: params.defineBoolean("UPDATE_USER_ON_DOC_UPDATED", {
+        description: "Update user when account document is updated",
+        default: true,
+    }),
+    DELETE_USER_ON_DOC_DELETED: params.defineBoolean("DELETE_USER_ON_DOC_DELETED", {
+        description: "Delete user when account document is deleted",
         default: true,
     }),
     REVOKE_TOKEN_ON_USER_UPDATE: params.defineBoolean("REVOKE_TOKEN_ON_USER_UPDATED", {
@@ -55,46 +71,82 @@ export const ENV = {
     ALLOWED_CLAIMS: params.defineString("ALLOWED_CLAIMS", {
         description: "Comma-separated list of allowed custom claims",
         default: "role, group",
-    }),
+    })
 };
 
-export const FIREBASE_ERROR_MAP: Record<string, { Severity: "warn" | "error"; Message: string; }> = {
-    // Authentication
-    "auth/user-not-found": { Severity: "warn", Message: "User not found." },
-    "auth/invalid-email": { Severity: "error", Message: "Invalid email format." },
-    "auth/email-already-exists": { Severity: "error", Message: "Email already exists." },
-    "auth/uid-already-exists": { Severity: "error", Message: "UID already exists." },
-    "auth/invalid-uid": { Severity: "error", Message: "Invalid UID." },
-    "auth/invalid-display-name": { Severity: "error", Message: "Invalid display name." },
-    "auth/invalid-photo-url": { Severity: "error", Message: "Invalid photo URL." },
-    "auth/invalid-phone-number": { Severity: "error", Message: "Invalid phone number." },
-    "auth/phone-number-already-exists": { Severity: "error", Message: "Phone number already exists." },
-    "auth/invalid-disabled-field": { Severity: "error", Message: "Invalid disabled field." },
-    "auth/claims-too-large": { Severity: "error", Message: "Custom claims payload too large." },
-    "auth/id-token-expired": { Severity: "error", Message: "ID token expired." },
-    "auth/id-token-revoked": { Severity: "error", Message: "ID token revoked." },
-    "auth/invalid-id-token": { Severity: "error", Message: "Invalid ID token." },
-    "auth/argument-error": { Severity: "error", Message: "Invalid argument provided." },
-    "auth/insufficient-permission": { Severity: "error", Message: "Insufficient permission." },
-    "auth/internal-error": { Severity: "error", Message: "Internal Auth error." },
+// Define the enum with all error codes
+export enum FIREBASE_ERROR {
+  // Authentication
+  USER_NOT_FOUND = "auth/user-not-found",
+  INVALID_EMAIL = "auth/invalid-email",
+  EMAIL_ALREADY_EXISTS = "auth/email-already-exists",
+  UID_ALREADY_EXISTS = "auth/uid-already-exists",
+  INVALID_UID = "auth/invalid-uid",
+  INVALID_DISPLAY_NAME = "auth/invalid-display-name",
+  INVALID_PHOTO_URL = "auth/invalid-photo-url",
+  INVALID_PHONE_NUMBER = "auth/invalid-phone-number",
+  PHONE_NUMBER_ALREADY_EXISTS = "auth/phone-number-already-exists",
+  INVALID_DISABLED_FIELD = "auth/invalid-disabled-field",
+  CLAIMS_TOO_LARGE = "auth/claims-too-large",
+  ID_TOKEN_EXPIRED = "auth/id-token-expired",
+  ID_TOKEN_REVOKED = "auth/id-token-revoked",
+  INVALID_ID_TOKEN = "auth/invalid-id-token",
+  ARGUMENT_ERROR = "auth/argument-error",
+  INSUFFICIENT_PERMISSION = "auth/insufficient-permission",
+  INTERNAL_AUTH_ERROR = "auth/internal-error",
 
-    // Firestore
-    "aborted": { Severity: "error", Message: "Operation aborted." },
-    "already-exists": { Severity: "error", Message: "Resource already exists." },
-    "cancelled": { Severity: "error", Message: "Operation cancelled." },
-    "data-loss": { Severity: "error", Message: "Unrecoverable data loss or corruption." },
-    "deadline-exceeded": { Severity: "error", Message: "Deadline exceeded." },
-    "failed-precondition": { Severity: "error", Message: "Operation failed precondition." },
-    "internal": { Severity: "error", Message: "Internal Firestore error." },
-    "invalid-argument": { Severity: "error", Message: "Invalid argument." },
-    "not-found": { Severity: "error", Message: "Document not found." },
-    "out-of-range": { Severity: "error", Message: "Value out of range." },
-    "permission-denied": { Severity: "error", Message: "Permission denied." },
-    "resource-exhausted": { Severity: "error", Message: "Resource exhausted (quota exceeded)." },
-    "unauthenticated": { Severity: "error", Message: "Unauthenticated request." },
-    "unavailable": { Severity: "error", Message: "Service unavailable." },
-    "unimplemented": { Severity: "error", Message: "Operation not implemented."
-    }
+  // Firestore
+  ABORTED = "aborted",
+  ALREADY_EXISTS = "already-exists",
+  CANCELLED = "cancelled",
+  DATA_LOSS = "data-loss",
+  DEADLINE_EXCEEDED = "deadline-exceeded",
+  FAILED_PRECONDITION = "failed-precondition",
+  INTERNAL = "internal",
+  INVALID_ARGUMENT = "invalid-argument",
+  NOT_FOUND = "not-found",
+  OUT_OF_RANGE = "out-of-range",
+  PERMISSION_DENIED = "permission-denied",
+  RESOURCE_EXHAUSTED = "resource-exhausted",
+  UNAUTHENTICATED = "unauthenticated",
+  UNAVAILABLE = "unavailable",
+  UNIMPLEMENTED = "unimplemented"
+}
+
+export const FIREBASE_ERROR_MAP: Record<string, { Severity: "warn" | "error"; Message: string }> = {
+  // Authentication
+  [FIREBASE_ERROR.USER_NOT_FOUND]: { Severity: "warn", Message: "User not found." },
+  [FIREBASE_ERROR.INVALID_EMAIL]: { Severity: "error", Message: "Invalid email format." },
+  [FIREBASE_ERROR.EMAIL_ALREADY_EXISTS]: { Severity: "error", Message: "Email already exists." },
+  [FIREBASE_ERROR.UID_ALREADY_EXISTS]: { Severity: "error", Message: "UID already exists." },
+  [FIREBASE_ERROR.INVALID_UID]: { Severity: "error", Message: "Invalid UID." },
+  [FIREBASE_ERROR.INVALID_DISPLAY_NAME]: { Severity: "error", Message: "Invalid display name." },
+  [FIREBASE_ERROR.INVALID_PHOTO_URL]: { Severity: "error", Message: "Invalid photo URL." },
+  [FIREBASE_ERROR.INVALID_PHONE_NUMBER]: { Severity: "error", Message: "Invalid phone number." },
+  [FIREBASE_ERROR.PHONE_NUMBER_ALREADY_EXISTS]: { Severity: "error", Message: "Phone number already exists." },
+  [FIREBASE_ERROR.INVALID_DISABLED_FIELD]: { Severity: "error", Message: "Invalid disabled field." },
+  [FIREBASE_ERROR.CLAIMS_TOO_LARGE]: { Severity: "error", Message: "Custom claims payload too large." },
+  [FIREBASE_ERROR.ID_TOKEN_EXPIRED]: { Severity: "error", Message: "ID token expired." },
+  [FIREBASE_ERROR.ID_TOKEN_REVOKED]: { Severity: "error", Message: "ID token revoked." },
+  [FIREBASE_ERROR.INVALID_ID_TOKEN]: { Severity: "error", Message: "Invalid ID token." },
+  [FIREBASE_ERROR.ARGUMENT_ERROR]: { Severity: "error", Message: "Invalid argument provided." },
+  [FIREBASE_ERROR.INSUFFICIENT_PERMISSION]: { Severity: "error", Message: "Insufficient permission." },
+  [FIREBASE_ERROR.INTERNAL_AUTH_ERROR]: { Severity: "error", Message: "Internal Auth error." },
+
+  // Firestore
+  [FIREBASE_ERROR.ABORTED]: { Severity: "error", Message: "Operation aborted." },
+  [FIREBASE_ERROR.ALREADY_EXISTS]: { Severity: "error", Message: "Resource already exists." },
+  [FIREBASE_ERROR.CANCELLED]: { Severity: "error", Message: "Operation cancelled." },
+  [FIREBASE_ERROR.DATA_LOSS]: { Severity: "error", Message: "Unrecoverable data loss or corruption." },
+  [FIREBASE_ERROR.DEADLINE_EXCEEDED]: { Severity: "error", Message: "Deadline exceeded." },
+  [FIREBASE_ERROR.FAILED_PRECONDITION]: { Severity: "error", Message: "Operation failed precondition." },
+  [FIREBASE_ERROR.INTERNAL]: { Severity: "error", Message: "Internal Firestore error." },
+  [FIREBASE_ERROR.INVALID_ARGUMENT]: { Severity: "error", Message: "Invalid argument." },
+  [FIREBASE_ERROR.NOT_FOUND]: { Severity: "error", Message: "Document not found." },
+  [FIREBASE_ERROR.OUT_OF_RANGE]: { Severity: "error", Message: "Value out of range." },
+  [FIREBASE_ERROR.PERMISSION_DENIED]: { Severity: "error", Message: "Permission denied." },
+  [FIREBASE_ERROR.RESOURCE_EXHAUSTED]: { Severity: "error", Message: "Resource exhausted (quota exceeded)." },
+  [FIREBASE_ERROR.UNAUTHENTICATED]: { Severity: "error", Message: "Unauthenticated request." },
+  [FIREBASE_ERROR.UNAVAILABLE]: { Severity: "error", Message: "Service unavailable." },
+  [FIREBASE_ERROR.UNIMPLEMENTED]: { Severity: "error", Message: "Operation not implemented." }
 };
-
-

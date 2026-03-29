@@ -9,6 +9,25 @@ All notable changes to this project will be documented in this file.
 | `Fixed` | Bug fixes on existing functionality |
 ---
 
+### 0.2.2 : Multiple changes
+
+**Added**
+- Full set of configuration parameters to toggle synchronization behaviors:
+  - `CREATE_DOC_ON_USER_CREATED`: Automatic Firestore account document creation.
+  - `DELETE_DOC_ON_USER_DELETED`: Optional soft delete of documents.
+  - `CREATE_USER_ON_DOC_CREATED` / `UPDATE_USER_ON_DOC_UPDATED`: Control user creation and updates from Firestore.
+  - `DELETE_USER_ON_DOC_DELETED`: Control Firebase user deletion from Firestore events.
+  - `REVOKE_TOKEN_ON_USER_UPDATED`: Optional refresh token revocation during user updates.
+- Comprehensive Mermaid sequence diagrams in-repository documentation.
+- Detailed test cases and verification matrix for the new configuration parameters.
+
+**Changed**
+- Updated `PREINSTALL.md` and `POSTINSTALL.md` to reflect the new feature set and UID-based account keying.
+- Refactored core triggers in `index.ts` to utilize the newer Gen 2 blocking function.
+
+**Fixed**
+- Corrected a logic bug in `services.ts` where `CREATE_DOC_ON_USER_CREATED` was used instead of `CREATE_USER_ON_DOC_CREATED`.
+
 ### 0.2.1 : Fix trigger registrations
 
 **Fixed**
