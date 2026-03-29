@@ -14,9 +14,6 @@ Example: `Firebase Admin` role.
 ### Accounts Collection
 A Firestore collection `Accounts` stores user account documents keyed by **UID**.
 
-### Public Signup Blocking
-If `BLOCK_PUBLIC_SIGNUP` is enabled, the extension will prevent new users from being created unless a document already exists in the Firestore `Accounts` collection with a matching UID.
-
 ### Event Logs
 All actions are recorded in a subcollection `Activity` under each user account document.
 - This allows you to present historical logs to your user (or administrator) easily.

@@ -7,8 +7,6 @@
 
 Keep Firebase Authentication users and Firestore account documents synchronized.
 
-[Test Matrix & Coverage](file:///c:/Workspace/firebase-firestore-iam/test_matrix.md)
-
 This extension synchronizes Firebase Authentication with Firestore account documents. It ensures that user properties and claims remain consistent across both systems, while providing audit trails and lifecycle management.
 
 | Event | Details |
@@ -126,29 +124,6 @@ sequenceDiagram
     end
 ```
 
-#### 5. Authentication: Before User Creation
-Triggers before a new user is created. If `BLOCK_PUBLIC_SIGNUP` is enabled, it ensures a document exists in the `Accounts` collection with the matching UID.
-
-```mermaid
-sequenceDiagram
-    participant Auth as Firebase Auth
-    participant Func as Cloud Function (BeforeUserCreation)
-    participant FS as Firestore (Accounts)
-
-    Auth->>Func: Before User Created Trigger (Blocking)
-    alt ENV.BLOCK_PUBLIC_SIGNUP is false
-        Func-->>Auth: Allow Creation
-    else ENV.BLOCK_PUBLIC_SIGNUP is true
-        Func->>FS: Check if Document (uid) exists
-        FS-->>Func: Exists?
-        alt Document exists
-            Func-->>Auth: Allow Creation
-        else Document does NOT exist
-            Func-->>Auth: Block Creation (403 Permission Denied)
-        end
-    end
-```
-
 #### Additional Parameters
 
 The following parameters may be configured.
@@ -158,7 +133,6 @@ The following parameters may be configured.
 | Soft Delete Behaviour | Whether to soft delete the account document when a user is deleted |
 | Token Management Behavior | Whether to revoke refresh tokens when a user is updated |
 | Allowed claims | Comma-separated list of claims that can be set on users. |
-| Block Public Signup | Whether to block user creation if no Firestore document exists for the UID. |
 
 #### Google API Usage
 
@@ -186,7 +160,7 @@ The following table provides estimates for Cloud Function invocations and Firest
 | **Firestore Doc Deletion** <br/>`DeleteUserOnAccountDeleted` | 1 | 1 | 2 |
 
 > [!NOTE]
-> Estimates assume `BLOCK_PUBLIC_SIGNUP=true` and default synchronization settings. If `CREATE_DOC_ON_USER_CREATED` is enabled, a user sign-up will trigger a cascading Firestore creation event, adding 1 invocation and 1 write (for the log entry).
+> Estimates assume public sign-up is not allowed and default synchronization settings.
 
 #### Post Installation
 Ensure that the service account bound to the extension has the right to manage documents and authentication.   

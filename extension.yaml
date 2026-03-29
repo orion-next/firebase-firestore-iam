@@ -62,16 +62,6 @@ resources:
         eventType: providers/cloud.firestore/eventTypes/document.delete
         resource: projects/${PROJECT_ID}/databases/(default)/documents/Accounts/{email}
 
-  - name: BeforeUserCreation
-    type: firebaseextensions.v1beta.function
-    description: Blocking function that only allows user creation if a corresponding document exists in the Accounts collection.
-    properties:
-      location: ${param:REGION}
-      runtime: nodejs22
-      entryPoint: BeforeUserCreation
-      eventTrigger:
-        eventType: providers/firebase.auth/eventTypes/user.beforeCreate
-
 params:
   - param: REGION
     label: Cloud Functions Region
@@ -122,10 +112,4 @@ params:
   - param: ALLOWED_CLAIMS
     label: "Allowed Custom Claims"
     description: "Comma-separated list of claims that can be set on users."
-    default: "role, group"
-
-  - param: BLOCK_PUBLIC_SIGNUP
-    label: Block Public Signup
-    description: Whether to only allow user creation if a document exists in the Accounts collection with that user's UID.
-    type: boolean
-    default: false
+    default: "role"

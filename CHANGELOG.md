@@ -12,7 +12,6 @@ All notable changes to this project will be documented in this file.
 ### 0.2.2 : Multiple changes
 
 **Added**
-- `BLOCK_PUBLIC_SIGNUP` parameter and supporting `BeforeUserCreation` blocking hook to restrict signups.
 - Full set of configuration parameters to toggle synchronization behaviors:
   - `CREATE_DOC_ON_USER_CREATED`: Automatic Firestore account document creation.
   - `DELETE_DOC_ON_USER_DELETED`: Optional soft delete of documents.

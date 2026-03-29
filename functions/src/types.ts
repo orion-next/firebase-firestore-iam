@@ -71,11 +71,7 @@ export const ENV = {
     ALLOWED_CLAIMS: params.defineString("ALLOWED_CLAIMS", {
         description: "Comma-separated list of allowed custom claims",
         default: "role, group",
-    }),
-    BLOCK_PUBLIC_SIGNUP: params.defineBoolean("BLOCK_PUBLIC_SIGNUP", {
-        description: "Only allow user creation if a document exists in the Accounts collection with that user's UID",
-        default: false,
-    }),
+    })
 };
 
 // Define the enum with all error codes
