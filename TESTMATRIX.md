@@ -1,6 +1,7 @@
 ### Test Matrix: Firestore ↔ Authentication IAM (Emulator Verification)
 
 This checklist provides a complete verification path for all synchronization triggers. Ensure the Firebase Emulator is running before proceeding.
+
 ---
 
 ### 1. Authentication: User Created (`SyncAccountOnUserCreated`)
